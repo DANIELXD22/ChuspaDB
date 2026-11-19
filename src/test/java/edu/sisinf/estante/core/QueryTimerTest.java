@@ -1,8 +1,10 @@
 package edu.sisinf.estante.core;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import edu.sisinf.chuspadb.core.QueryTimer;
 import org.junit.jupiter.api.Test;
 
 class QueryTimerTest {
@@ -75,5 +77,42 @@ class QueryTimerTest {
     timer.detener();
 
     assertTrue(timer.getTiempoMs() >= 0.0);
+  }
+
+  @Test
+  void constructorConNombreNuloLanzaNullPointerException() {
+    assertThrows(NullPointerException.class, () -> new QueryTimer(null));
+  }
+
+  @Test
+  void constructorConNombreVacioLanzaIllegalArgumentException() {
+    assertThrows(IllegalArgumentException.class, () -> new QueryTimer(""));
+  }
+
+  @Test
+  void constructorConNombreSoloEspaciosLanzaIllegalArgumentException() {
+    assertThrows(IllegalArgumentException.class, () -> new QueryTimer("   "));
+  }
+
+  @Test
+  void constructorConNombreValidoNoLanzaExcepcion() {
+    assertDoesNotThrow(() -> new QueryTimer("consulta-usuarios"));
+  }
+
+  @Test
+  void iniciarDosVecesSinDetenerLanzaIllegalStateException() {
+    QueryTimer timer = new QueryTimer();
+    timer.iniciar();
+
+    assertThrows(IllegalStateException.class, timer::iniciar);
+  }
+
+  @Test
+  void detenerDosVecesLanzaIllegalStateException() {
+    QueryTimer timer = new QueryTimer();
+    timer.iniciar();
+    timer.detener();
+
+    assertThrows(IllegalStateException.class, timer::detener);
   }
 }
